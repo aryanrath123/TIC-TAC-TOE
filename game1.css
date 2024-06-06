@@ -115,6 +115,7 @@ main {
   align-items: center;
   flex-direction: column;
   gap: 2rem;
+  margin-bottom: 4rem; /* Adjusted margin bottom */
 }
 
 .video-container {
@@ -147,9 +148,7 @@ main {
   font-size: 5vw;
   text-shadow: 2px 2px 4px #000000;
   z-index: 10000;
-
   background: rgba(0, 0, 0, 0.5);
-
   padding: 10px 20px;
   border-radius: 10px;
 }
@@ -194,10 +193,6 @@ main {
 }
 
 .new-game-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   padding: 10px 20px;
   font-size: 40px;
   background-color: #191913;
@@ -205,14 +200,34 @@ main {
   border-radius: 1rem;
   border: none;
   cursor: pointer;
-  z-index: 10001;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin-top: 2rem;
 }
 
 .new-game-btn:hover {
   background-color: #FF5F1F;
-  color: black;
+  color: rgb(0, 0, 0);
 }
-#new-btn.hide {
-  display: none;
+
+.new-game-btn.relative-position {
+  position: relative;
+}
+
+.new-game-btn.absolute-position {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+}
+
+#new-game-video {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: yellow;
+  color: black;
+  z-index: 10001;
+  font-size: 30px;
 }
