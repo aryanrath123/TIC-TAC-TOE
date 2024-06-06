@@ -7,11 +7,9 @@ let videoContainer = document.querySelector("#video-box");
 let winningVideo = document.querySelector("#winning-video");
 let winnerText = document.querySelector("#winner-text");
 let newGameBtnVideo = document.querySelector("#new-game-video");
-const drawContainer = document.querySelector("#draw-box");
-const newGameDrawBtn = document.querySelector("#new-game-draw");
 
-let turnO = true; //playerX, playerO
-let count = 0; //To Track Draw
+let turnO = true; // playerX, playerO
+let count = 0; // To Track Draw
 
 const winPatterns = [
   [0, 1, 2],
@@ -32,25 +30,23 @@ const resetGame = () => {
   videoContainer.classList.add("hide");
   winningVideo.pause();
   winningVideo.currentTime = 0;
-  
+  newGameBtn.classList.remove("relative-position");
+  newGameBtnVideo.classList.add("hide");
 };
 
 boxes.forEach((box) => {
   box.addEventListener("click", () => {
     if (box.innerText === "") {
-      if (turnO) {
-        box.innerText = "O";
-        turnO = false;
-      } else {
-        box.innerText = "X";
-        turnO = true;
-      }
+      box.innerText = turnO ? "O" : "X";
+      turnO = !turnO;
       box.disabled = true;
       count++;
 
-      let isWinner = checkWinner();
+      if (checkWinner()) {
+        return;
+      }
 
-      if (count === 9 && !isWinner) {
+      if (count === 9) {
         gameDraw();
       }
     }
@@ -60,23 +56,22 @@ boxes.forEach((box) => {
 const gameDraw = () => {
   msg.innerText = `Game was Draw.`;
   msgContainer.classList.remove("hide");
-  newGameBtn.classList.add("new-game-btn"); // Add this line to apply styling
   newGameBtn.classList.remove("hide");
   disableBoxes();
   resetBtn.classList.add("hide");
+  newGameBtn.classList.add("relative-position");
+  handleGameOutcome('draw');
 };
 
 const disableBoxes = () => {
-  for (let box of boxes) {
-    box.disabled = true;
-  }
+  boxes.forEach(box => box.disabled = true);
 };
 
 const enableBoxes = () => {
-  for (let box of boxes) {
+  boxes.forEach(box => {
     box.disabled = false;
     box.innerText = "";
-  }
+  });
 };
 
 const showWinner = (winner) => {
@@ -86,29 +81,34 @@ const showWinner = (winner) => {
   winnerText.innerText = `Congratulations, Winner is ${winner}`;
   winningVideo.play();
   disableBoxes();
-  newGameBtn.classList.add("hide"); // Show the New Game button
+  newGameBtn.classList.add("hide");
+  newGameBtnVideo.classList.remove("hide");
+  handleGameOutcome('win');
 };
 
-
 const checkWinner = () => {
-  for (let pattern of winPatterns) {
-    let pos1Val = boxes[pattern[0]].innerText;
-    let pos2Val = boxes[pattern[1]].innerText;
-    let pos3Val = boxes[pattern[2]].innerText;
-
-    if (pos1Val != "" && pos2Val != "" && pos3Val != "") {
-      if (pos1Val === pos2Val && pos2Val === pos3Val) {
-        showWinner(pos1Val);
-        return true;
-      }
+  return winPatterns.some(pattern => {
+    const [a, b, c] = pattern;
+    if (boxes[a].innerText && boxes[a].innerText === boxes[b].innerText && boxes[a].innerText === boxes[c].innerText) {
+      showWinner(boxes[a].innerText);
+      return true;
     }
-  }
-  return false;
+    return false;
+  });
 };
 
 newGameBtn.addEventListener("click", () => {
   resetGame();
-  resetBtn.classList.remove("hide"); // Show the Reset button when New Game is clicked
+  resetBtn.classList.remove("hide");
 });
+
 resetBtn.addEventListener("click", resetGame);
 newGameBtnVideo.addEventListener("click", resetGame);
+
+function handleGameOutcome(outcome) {
+  if (outcome === 'win') {
+    newGameBtnVideo.classList.remove('hide');
+  } else if (outcome === 'draw') {
+    newGameBtn.classList.remove('hide');
+  }
+}
