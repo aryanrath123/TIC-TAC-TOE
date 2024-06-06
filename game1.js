@@ -32,45 +32,34 @@ const resetGame = () => {
   winningVideo.currentTime = 0;
 };
 
-boxes.forEach((box) => {
-  box.addEventListener("click", () => {
-    if (box.innerText === "") {
-      if (turnO) {
-        box.innerText = "O";
-        turnO = false;
-      } else {
-        box.innerText = "X";
-        turnO = true;
-      }
-      box.disabled = true;
-      count++;
-
-      let isWinner = checkWinner();
-
-      if (count === 9 && !isWinner) {
-        gameDraw();
-      }
+const handleBoxClick = (event) => {
+  let box = event.target;
+  if (box.innerText === "") {
+    box.innerText = turnO ? "O" : "X";
+    turnO = !turnO;
+    box.disabled = true;
+    count++;
+    if (checkWinner() || count === 9) {
+      return;
     }
-  });
-});
+  }
+};
 
 const gameDraw = () => {
-  msg.innerText = `Game was a Draw.`;
+  msg.innerText = `Game was Draw.`;
   msgContainer.classList.remove("hide");
   disableBoxes();
 };
 
 const disableBoxes = () => {
-  for (let box of boxes) {
-    box.disabled = true;
-  }
+  boxes.forEach(box => box.disabled = true);
 };
 
 const enableBoxes = () => {
-  for (let box of boxes) {
+  boxes.forEach(box => {
     box.disabled = false;
     box.innerText = "";
-  }
+  });
 };
 
 const showWinner = (winner) => {
@@ -84,20 +73,19 @@ const showWinner = (winner) => {
 
 const checkWinner = () => {
   for (let pattern of winPatterns) {
-    let pos1Val = boxes[pattern[0]].innerText;
-    let pos2Val = boxes[pattern[1]].innerText;
-    let pos3Val = boxes[pattern[2]].innerText;
-
-    if (pos1Val != "" && pos2Val != "" && pos3Val != "") {
-      if (pos1Val === pos2Val && pos2Val === pos3Val) {
-        showWinner(pos1Val);
-        return true;
-      }
+    let [a, b, c] = pattern;
+    if (boxes[a].innerText && boxes[a].innerText === boxes[b].innerText && boxes[a].innerText === boxes[c].innerText) {
+      showWinner(boxes[a].innerText);
+      return true;
     }
+  }
+  if (count === 9) {
+    gameDraw();
   }
   return false;
 };
 
+document.querySelector(".game").addEventListener("click", handleBoxClick);
 newGameBtn.addEventListener("click", resetGame);
 resetBtn.addEventListener("click", resetGame);
 newGameBtnVideo.addEventListener("click", resetGame);
